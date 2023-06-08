@@ -1,5 +1,7 @@
 import statistics as st
 import math
+import csv
+
 #lectura de archivo rango.txt
 def read_and_load_data():
     try:
@@ -37,18 +39,26 @@ def mode(datos):
 
 #cuartiles e impresión del mismo
 def quartiles(datos):
-    print('\t\tCUARTILES')
+    print('\t\tCUARTILES Y PUNTOS ATÍPICOS')
+    cuartiles = []
     for i in range(1,4):
         cuartil = i * ((len(datos) + 1) // 4)
         print('La posición del cuartil Q' , i , ' es: ', cuartil)
         print('Dicha posición del cuartil Q' , i , ' tiene el valor de: ' , datos[cuartil - 1]) #cuartil - 1 por q la lista empieza desde cero
+        cuartiles.append(cuartil)
+    print(cuartiles)
+    rango_intercuartil = cuartiles[2] - cuartiles[0]
+    atípicos_inferiores = [dato for dato in datos if dato < (cuartiles[0] - 1.5 * rango_intercuartil)]
+    atípicos_superiores = [dato for dato in datos if dato > (cuartiles[2] + 1.5 * rango_intercuartil)]
+    print('Los datos atípicos inferiores son: ', atípicos_inferiores)
+    print('Los datos atípicos superiores son: ', atípicos_superiores)
     print('==========================================================================')
 
 #varianza e impresión del mismo        
 def variance_and_standard_deviation(datos,promedio):
     print('\t\tVARIANZA Y DESVIACIÓN ESTÁNDAR')
     sumatoria = [round(((dato - promedio) ** 2),2) for dato in datos]
-    varianza = sum(sumatoria) / len(datos)  #si se requiere la fórmula de muestra es n - 1 en vez de n en el denominador
+    varianza = sum(sumatoria) / len(datos) - 1  #si se requiere la fórmula de muestra es n - 1 en vez de n en el denominador
     print('La varianza (suponiendo que es una muestra) es de: ', round(varianza,2))
     print('La desviación estándar es: ', round((math.sqrt(round(varianza,2))),2))
     print('==========================================================================')
@@ -92,7 +102,9 @@ def intervals (datos):
         k_intervalos = math.ceil(k_intervalos)
 
     print('número de intervalos: ', k_intervalos)
+    print('rango: ', rango)
     amplitud = round(rango / k_intervalos)
+    print('amplitud: ', amplitud)
     intervalos = []
     inicio = 0
 
@@ -111,6 +123,33 @@ def intervals (datos):
 
 
 
+def read_data():
+        # Ruta al archivo CSV
+    archivo_csv = "otrosDatos.csv"
+
+    # Listas vacías para almacenar las columnas
+    columna1 = []
+    columna2 = []
+    columna3 = []
+    columna4 = []
+
+    # Lectura del archivo CSV y almacenamiento de las columnas en las listas correspondientes
+    with open(archivo_csv, 'r') as archivo:
+        lector_csv = csv.reader(archivo)
+        for fila in lector_csv:
+            columna1.append(fila[0])
+            columna2.append(fila[1])
+            columna3.append(fila[2])
+            columna4.append(fila[3])
+
+    # Imprimir las listas resultantes
+    print("Columna 1:", columna1)
+    print("Columna 2:", columna2)
+    print("Columna 3:", columna3)
+    print("Columna 4:", columna4)
+
+#read_data()
+
 data = read_and_load_data()
 data.sort()
                     # llamada a funciones
@@ -121,3 +160,6 @@ variance_and_standard_deviation(data,mean(data))
 quartiles(data) #revisar si puede colocar un lugar para números pares (o sea que se coloque entre los dos números donde debería de estar)
 diagrama_tallo_hojas(data)
 intervals(data)
+
+
+
