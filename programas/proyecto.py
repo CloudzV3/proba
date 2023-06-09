@@ -17,15 +17,18 @@ def read_and_load_data():
 
 #impresión de datos
 def print_data(datos):  
-    print("\t\tDATOS ORDENADOS\nLos datos son : ", datos)
+    print("\t\tDATOS \nLos datos son : ", datos)
     print('==========================================================================')
 
 #promedio e impresión del mismo también regresa el valor
-def mean(datos):
+def print_mean(datos):
     promedio = round((sum(datos) / len(datos)),2)
     print('\t\tPROMEDIO\nEl promedio de los datos ingresados es de: ', promedio)
     print('==========================================================================')
-    return promedio
+
+def mean(datos):
+    return round((sum(datos) / len(datos)),2)
+
 #mediana e impresión del mismo
 def median(datos):
     tam = len(datos)
@@ -68,7 +71,7 @@ def quartiles(datos):
     print('==========================================================================')
 
 #varianza e impresión del mismo        
-def variance_standard_deviation(datos,promedio):
+def print_variance_standard_deviation(datos,promedio):
     print('\t\tVARIANZA Y DESVIACIÓN ESTÁNDAR')
     sumatoria = [round((dato - promedio)**2,2) for dato in datos]
     varianza = sum(sumatoria) / (len(datos) - 1)  #si se requiere la fórmula de muestra es n - 1 en vez de n en el denominador
@@ -76,6 +79,13 @@ def variance_standard_deviation(datos,promedio):
     print('La desviación estándar es: ', round((math.sqrt(round(varianza,2))),2))
 
     print('==========================================================================')
+
+#varianza e impresión del mismo        
+def variance(datos,promedio):
+    sumatoria = [round((dato - promedio)**2,2) for dato in datos]
+    varianza = round((sum(sumatoria) / (len(datos) - 1)),2)  #si se requiere la fórmula de muestra es n - 1 en vez de n en el denominador
+    #desviacion_estandar = round((math.sqrt(round(varianza,2))),2)
+    return varianza
 
 
 #geenrar diagrama de tallo hojas
@@ -110,7 +120,9 @@ def intervals (datos):
     maximo = max(datos)
     rango = maximo - minimo
     k_intervalos = 1 + 3.322*math.log10(len(datos))
+    print(k_intervalos)
     if(math.floor(k_intervalos) % 2 != 0):  #se recomienda redondear a abajo, pero si es par ese número
+        k_intervalos = math.floor(k_intervalos)
         pass                                #-> se redondea a arriba
     else:
         k_intervalos = math.ceil(k_intervalos)
@@ -137,9 +149,24 @@ def intervals (datos):
         print('Intervalo: ', intervalo, '\tFrecuencia: ', frecuencia)
     print('==========================================================================')
 
+def covariance(x,y):
+    prom_x = mean(x)
+    prom_y = mean(y)
+    n = len(x)
+    numerador_valores = []
+    for i in range(n):
+        valor = (x[i] - prom_x) * (y[i] - prom_y)
+        numerador_valores.append(round(valor,2))
+    covarianza = round(sum(numerador_valores) / (n - 1),2)
+    return covarianza
+
 def matriz_covarianza(cols):
-    
-    pass
+    fila_1 = [variance(cols[0],mean(cols[0])),      covariance(cols[1],  cols[0]),      covariance(cols[2],cols[0]),        covariance(cols[3],cols[0])]
+    fila_2 = [covariance(cols[0],cols[1]),          variance(cols[1],mean(cols[1])),    covariance(cols[2],cols[1]),        covariance(cols[3],cols[1])]
+    fila_3 = [covariance(cols[0],cols[2]),          covariance(cols[1],  cols[2]),      variance(cols[2],mean(cols[2])),    covariance(cols[3],cols[2])]
+    fila_4 = [covariance(cols[0],cols[3]),          covariance(cols[1],  cols[3]),      covariance(cols[2],cols[3]),        variance(cols[3],mean(cols[3]))]
+    matriz = [fila_1, fila_2, fila_3, fila_4]
+    return matriz
 
 def read_data():
         # Ruta al archivo CSV
@@ -155,29 +182,34 @@ def read_data():
     with open(archivo_csv, 'r') as archivo:
         lector_csv = csv.reader(archivo)
         for fila in lector_csv:
-            columna1.append(fila[0])
-            columna2.append(fila[1])
-            columna3.append(fila[2])
-            columna4.append(fila[3])
+            columna1.append(int(fila[0]))
+            columna2.append(int(fila[1]))
+            columna3.append(int(fila[2]))
+            columna4.append(int(fila[3]))
+    columna1.sort()
+    columna2.sort()
+    columna3.sort()
+    columna4.sort()
+    columnas = [columna1, columna2, columna3,columna4]
+    return columnas
 
-    # Imprimir las listas resultantes
-    print("Columna 1:", columna1)
-    print("Columna 2:", columna2)
-    print("Columna 3:", columna3)
-    print("Columna 4:", columna4)
 
-#read_data()
-
-data = read_and_load_data()
-data.sort()
-                    # llamada a funciones
-print_data(data)  
-median(data) #revisar si puede colocar un lugar para números pares (o sea que se coloque entre los dos números donde debería de estar)
-mode(data)
-variance_standard_deviation(data,mean(data))
-quartiles(data) #revisar si puede colocar un lugar para números pares (o sea que se coloque entre los dos números donde debería de estar)
-diagrama_tallo_hojas(data)
-intervals(data)
+datos = read_data()
+matriz = matriz_covarianza(datos)
+print('Matriz de covarianza: ')
+for row in matriz:
+    print(row)
+print('==============================================================')
+for data in datos:
+                        # llamada a funciones
+    print_data(data)  
+    median(data) #revisar si puede colocar un lugar para números pares (o sea que se coloque entre los dos números donde debería de estar)
+    mode(data)
+    print_mean(data)
+    print_variance_standard_deviation(data,mean(data))
+    quartiles(data) #revisar si puede colocar un lugar para números pares (o sea que se coloque entre los dos números donde debería de estar)
+    diagrama_tallo_hojas(data)
+    intervals(data)
 
 
 
