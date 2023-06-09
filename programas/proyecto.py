@@ -169,8 +169,22 @@ def matriz_covarianza(cols):
     return matriz
 
 def read_data():
+
+
+    with open('otraPrueba.txt', 'r') as archivo_txt:
+        contenido = archivo_txt.readlines()
+
+    with open('archivo.csv', 'w', newline='') as archivo_csv:
+        writer = csv.writer(archivo_csv)
+        for linea in contenido:
+            # Dividir la línea en columnas si es necesario
+            columnas = linea.strip().split('\t')  # Por ejemplo, si las columnas están separadas por tabulaciones
+            
+            # Escribir la fila en el archivo CSV
+            writer.writerow(columnas)
+
         # Ruta al archivo CSV
-    archivo_csv = "otrosDatos.csv"
+    archivo_csv = "archivo.csv"
 
     # Listas vacías para almacenar las columnas
     columna1 = []
